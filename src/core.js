@@ -438,7 +438,7 @@ baron.prototype = {
         this.events = {}
 
         // DOM elements
-        this.root = params.root // Always an html node, not just a selector
+        this.root = params.root // Always html node, not just selector
         this.scroller = qs(params.scroller)
         if (process.env.NODE_ENV !== 'production') {
             if (this.scroller.tagName == 'body') {
@@ -496,7 +496,7 @@ baron.prototype = {
 
         // Free path for bar
         function k() {
-            return track[this.origin.client] - this.barTopLimit - this.bar[this.origin.offset]
+            return Math.ceil(track.getBoundingClientRect()[this.origin.client.split('client')[1].toLowerCase()]) - this.barTopLimit - this.bar[this.origin.offset]
         }
 
         // Relative content top position to bar top position
@@ -530,7 +530,7 @@ baron.prototype = {
         }
 
         this.rpos = function(r) { // Relative scroller position (0..1)
-            var free = this.scroller[this.origin.scrollSize] - this.scroller[this.origin.client],
+            var free = this.scroller[this.origin.scrollSize] - Math.ceil(this.scroller.getBoundingClientRect()[this.origin.client.split('client')[1].toLowerCase()]),
                 x
 
             if (r) {
@@ -545,7 +545,7 @@ baron.prototype = {
         // Switch on the bar by adding user-defined CSS classname to scroller
         this.barOn = function(dispose) {
             if (this.barOnCls) {
-                var noScroll = this.scroller[this.origin.client] >= this.scroller[this.origin.scrollSize]
+                var noScroll = Math.ceil(this.scroller.getBoundingClientRect()[this.origin.client.split('client')[1].toLowerCase()]) >= this.scroller[this.origin.scrollSize]
 
                 if (dispose || noScroll) {
                     if (has(this.root, this.barOnCls)) {
@@ -563,7 +563,7 @@ baron.prototype = {
 
         this.drag = function(e) {
             var rel = posToRel.call(this, this.cursor(e) - scrollerPos0)
-            var sub = (this.scroller[this.origin.scrollSize] - this.scroller[this.origin.client])
+            var sub = (this.scroller[this.origin.scrollSize] - Math.ceil(this.scroller.getBoundingClientRect()[this.origin.client.split('client')[1].toLowerCase()]))
 
             this.scroller[this.origin.scroll] = rel * sub
         }
@@ -661,8 +661,8 @@ baron.prototype = {
                 self = this
 
             if (self.bar) {
-                newBarSize = (track[self.origin.client] - self.barTopLimit) *
-                    self.scroller[self.origin.client] / self.scroller[self.origin.scrollSize]
+                newBarSize = (Math.ceil(track.getBoundingClientRect()[self.origin.client.split('client')[1].toLowerCase()]) - self.barTopLimit) *
+                    Math.ceil(self.scroller.getBoundingClientRect()[self.origin.client.split('client')[1].toLowerCase()]) / self.scroller[self.origin.scrollSize]
 
                 // Positioning bar
                 if (force || parseInt(oldBarSize, 10) != parseInt(newBarSize, 10)) {
